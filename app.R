@@ -48,16 +48,22 @@ ui <- fluidPage(
 server <- function(input, output) {
     # il folosim pentru a retine ultima variabila aleasa
     lastChoice <- "null"
+    #input$var e var din radioButtons si returneza nr variabilei alese
     observeEvent(input$var, {
       if(input$var == 1){
         if(lastChoice != "null")
           shinyjs::hide(id=lastChoice)
         shinyjs::show(id="beta")
+        # <<- se foloseste pentru a accesa variabile globale(in server)
         lastChoice <<- "beta"
+        # f si F
+        # input$alpha_ si input$beta_ sunt cele din mainPanel din box-ul "beta"
+        # ylab = label pentru Oy
+        # ylim = val de pe Oy
         output$functii <- renderPlot({par(mfrow = c(1,2))
           curve(dbeta(x, shape1 = input$alpha_, shape2 = input$beta_), 0, 1, ylim = c(0, 2.5),
                 ylab = "f(x)", col = "red", lwd = 2, main = "Functia de densitate")
-          curve(pbeta(x, shape1 = input$alpha_, shape2 = input$beta_),0,1,ylim = c(0,1), type = "l", main = "Functia de repartitie", ylab="F(x)", lwd = 2, col = "red")
+          curve(pbeta(x, shape1 = input$alpha_, shape2 = input$beta_), 0 , 1, ylim = c(0,1), type = "l", main = "Functia de repartitie", ylab="F(x)", lwd = 2, col = "red")
           })
           
       }
