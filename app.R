@@ -33,6 +33,7 @@ ui <- fluidPage(
             numericInput("A", h1("A"), value = 0),
             numericInput("B", h1("B"), value= 0)
         ),
+    
 
         # Show a plot of the generated distribution
         mainPanel(
