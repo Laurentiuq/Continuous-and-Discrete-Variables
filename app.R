@@ -83,6 +83,7 @@ server <- function(input, output, session) {
                 ylab = "f(x)", col = "black", lwd = 2, main = "Functia de densitate")
           curve(pbeta(x, shape1 = input$alpha_, shape2 = input$beta_), 0 , 1, ylim = c(0,1), type = "l", main = "Functia de repartitie", ylab="F(x)", lwd = 2, col = "black")
           })
+        
         output$Px_a_val <- renderText({
           paste("P(X <= A = P(X <=", input$A, ") =", round(pbeta(input$A, shape1= input$alpha_, shape2 = input$beta_), digits = 3))
         })
