@@ -5,6 +5,8 @@ library(shinyjs)
 library(r2symbols)
 library(actuar) # pentru pareto
 
+
+
 # Define the user interface
 ui <- dashboardPage(
   dashboardHeader(),
