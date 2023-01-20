@@ -24,11 +24,18 @@ ui <- dashboardPage(
             title = "Alpha",
             sliderInput("alpha_", "alpha_", 0.1, 1, 0.1)
           ),
+          div(id = "onlyBeta",
+            box(
+              title = "Beta",
+              sliderInput("beta_", "beta_", 0.1, 1, 0.1),
+            )
+          ),
+      ),
+      div(id = "oneParam",
           box(
-            title = "Beta",
-            sliderInput("beta_", "beta_", 0.1, 1, 0.1),
-          )
-      )
+            title = "AlphaS",
+            sliderInput("alphaS_", "alphaS_", 0.1, 1, 0.1), width = 900
+          ))
     ),
     
     
@@ -37,19 +44,20 @@ ui <- dashboardPage(
     fluidRow(
       box(plotOutput("density", height=450)),
       box(plotOutput("distribution", height = 450)),
-      box(plotOutput("distributionWithProb"), height=450),
-      box(title = "P", height = 450,
+      box(plotOutput("distributionWithProb")),
+      box(title = "P", height = 150,
             h4(id = "P1", textOutput("P1")),
             h4(id = "P2", textOutput("P2")),
             h4(id = "P3", textOutput("P3"))
-          )
+          ),
+      box(
+      sliderInput("A", "A", 0, 10, 0, 0.1),
       
+      sliderInput("B", "B", 0, 10, 1, 0.1),
+      height = 250
+      )
     ),
-    sliderInput("A", "A", 0, 10, 0, 0.1),
     
-    
-    
-    sliderInput("B", "B", 0, 10, 1, 0.1),
   )
 )
 
@@ -58,12 +66,20 @@ server <- function(input, output, session) {
     if(input$dist == "beta"){
       # hide("alphaBeta")
       show("alphaBeta")
+      hide("oneParam")
       
       updateSliderInput(session, "alpha_", label = symbol("alpha"),value=1, 
                         0, 10, 0.1
       )
       updateSliderInput(session, "beta_", label = HTML("beta"), value=1,
                         0, 10, 0.1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=0, 
+                        0, 1, 0.1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=0, 
+                        0, 1, 0.1
       )
       
       output$density <-renderPlot({
@@ -138,12 +154,21 @@ server <- function(input, output, session) {
     
     if(input$dist == "norm"){
       show("alphaBeta")
+      hide("oneParam")
       updateSliderInput(session, "alpha_", label = "Media",value=1, 
                         0, 100, 0.1
       )
       updateSliderInput(session, "beta_", label = "Deviatia standard", value=1,
                         0, 100, 0.1
       )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=0, 
+                        0, 1, 0.1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=0, 
+                        0, 1, 0.1
+      )
+      
       # hide("alphaBeta")
       output$density<-renderPlot({
         x <- seq(0, 1, length = 1000)
@@ -210,11 +235,18 @@ server <- function(input, output, session) {
     
     if(input$dist == "unif"){
       show("alphaBeta")
+      hide("oneParam")
       updateSliderInput(session, "alpha_", label = "Min",value=0.5, 
                         0, 1, 0.01
       )
       updateSliderInput(session, "beta_", label = "Max", value=0.7,
                         0, 1, 0.01
+      )
+      updateSliderInput(session, "A", label = symbol("A"),value=0, 
+                        0, 1, 0.1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=0, 
+                        0, 1, 0.1
       )
       # hide("alphaBeta")
       output$density<-renderPlot({
@@ -281,6 +313,251 @@ server <- function(input, output, session) {
     
     
     }
+    
+    
+    
+    
+    
+    if(input$dist == "exp"){
+      # show("alphaBeta")
+      hide("alphaBeta")
+      show("oneParam")
+      updateSliderInput(session, "alphaS_", label = "Lambda",value=0.5, 
+                        0, 100, 0.01
+      )
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 1, length = 1000)
+        a <- input$alphaS_
+        density <- dexp(x, rate = a, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 1, length = 1000)
+        a <- input$alphaS_
+        distribution <- pexp(x, rate = a, log = FALSE)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 1, length = 1000)
+        a <- input$alphaS_
+        A <- input$A
+        B <- input$B
+        distribution <- pexp(x, rate = a)
+        
+        xs <- seq(0, A, by = 0.01)
+        xs1 <- c(xs, seq(A, 0, by =-0.01))
+        ys <- c(c(pexp(xs, rate = a)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 1, by = 0.01)
+        xt1 <- c(xt, seq(1, B, by = -0.01))
+        yt <- c(c(pexp(xt, rate = a)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =0.01)
+        xf1 <- c(xf, seq(B, A, by =-0.01))
+        yf <- c(c(pexp(xf, rate = a)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), round(pexp(A, rate = a), digits = 2)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), round(1 - pexp(B, rate = a), digits = 2)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), round(pexp(B, rate = a) - pexp(A, rate = a), digits= 2)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+    
+    
+    
+    
+    if(input$dist == "pois"){
+      # show("alphaBeta")
+      hide("alphaBeta")
+      show("oneParam")
+      updateSliderInput(session, "alphaS_", label = "Lambda",value=0.5, 
+                        0, 1, 0.01
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 10, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 10, 1
+      )
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 16, by=1)
+        a <- input$alphaS_
+        density <- dpois(x, lambda = a, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 16, by = 1)
+        a <- input$alphaS_
+        distribution <- ppois(x, lambda = a, log = FALSE)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 10, by=1)
+        a <- input$alphaS_
+        A <- input$A
+        B <- input$B
+        distribution <- ppois(x, lambda = a)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by = -1))
+        ys <- c(c(ppois(xs, lambda = a)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 10, by = 1)
+        xt1 <- c(xt, seq(10, B, by = -1))
+        yt <- c(c(ppois(xt, lambda = a)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by = 1)
+        xf1 <- c(xf, seq(B, A, by = -1))
+        yf <- c(c(ppois(xf, lambda = a)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), round(ppois(A, lambda = a), digits = 2)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), round(1 - ppois(B, lambda = a), digits = 2)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), round(ppois(B, lambda = a) - pexp(A, rate = a), digits= 2)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+    
+    
+    
+    if(input$dist == "binom"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      updateSliderInput(session, "alpha_", label = "Repetari",value=0, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "beta_", label = "Probabilitate", value=1,
+                        0, 1, 0.1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dbinom(x, size = a,  prob = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- pbinom(x, size = a, prob = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- pbinom(x, size = a, prob = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(pbinom(xs, size = a, prob= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(pbinom(xt, size = a, prob= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(pbinom(xf, size = a, prob = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pbinom(A, size = a, prob = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pbinom(B, size = a, prob = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pbinom(B, size = a, prob = b) - pbinom(A, size = a, prob = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+    
     
     
     
