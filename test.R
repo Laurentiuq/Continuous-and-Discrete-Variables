@@ -9,12 +9,19 @@ library(actuar) # pentru pareto
 ui <- dashboardPage(
   dashboardHeader(),
   dashboardSidebar(
+    #side-bar
     selectInput("dist", "Select a Distribution:", 
                 c("Normal" = "norm", "Uniform" = "unif", "Exponential" = "exp", "Poisson" = "pois", "Binomial" = "binom", "Geometric" = "geom", "Gamma" = "gamma", "Beta" = "beta", "Chi-Squared" = "chisq", 
                   "F" = "f", "t" = "t", "Cauchy" = "cauchy", "Laplace" = "laplace", "Log-Normal" = "lnorm", "Weibull" = "weibull", "Pareto" = "pareto"))
     
   ),
+  #Folosim box
   
+  # Avem doua sliders "Alpha" si "Beta", valorile date de ele(alpha_, respectiv beta_) o sa fie folosite pe parcurs la toate distributiile care necesita/permit doua variabile
+  # vor fi preluate in toate distributiile ca "a" si "b"(in variabilele a si b)
+  
+  # oneParam este folosit pentru distributiile care necesita doar un parametru
+  # valoarea acestuia(alphaS_) o sa fie preluata ca "a"(in variabila a)
   dashboardBody(
     useShinyjs(),
     hidden(
@@ -38,8 +45,13 @@ ui <- dashboardPage(
     ),
     
     
+    # Avem cate un plot pentru: 
+    # - functia de densitate 
+    # - functia de repartitie
+    # - functia de repartitie cu calculul probabilitatilor de tipul"
+    # P(X <= a), P(X >= b), P(a <= X <= B)
     
-    
+    # Slider pentru A si pentru B
     fluidRow(
       box(plotOutput("density", height=450)),
       box(plotOutput("distribution", height = 450)),
@@ -63,10 +75,12 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   observe({
     if(input$dist == "beta"){
-      # hide("alphaBeta")
+      # afisam alphaBeta pentru ca avem nevoie de doua variabile
       show("alphaBeta")
+      # Ascundem slider-ul cu o singura variabila
       hide("oneParam")
       
+      # Adaptam valorile ce pot sa fie selectate pentru distributia curenta
       updateSliderInput(session, "alpha_", label = symbol("alpha"),value=1, 
                         0, 10, 0.1
       )
@@ -81,6 +95,7 @@ server <- function(input, output, session) {
                         0, 1, 0.1
       )
       
+      # Functia de densitate
       output$density <-renderPlot({
         x <- seq(0, 1, length = 1000)
         a <- input$alpha_
@@ -92,6 +107,7 @@ server <- function(input, output, session) {
           xlab("X") + ylab("Density")
       })
       
+      # Functia de distributie
       output$distribution <-renderPlot({
         x <- seq(0, 1, length = 1000)
         a <- input$alpha_
@@ -106,7 +122,7 @@ server <- function(input, output, session) {
         
       })
       
-      
+      # Functia de distributie cu probabilitatile specifice
       output$distributionWithProb<-renderPlot({
         x <- seq(0, 1, length = 1000)
         a <- input$alpha_
@@ -115,16 +131,17 @@ server <- function(input, output, session) {
         B <- input$B
         distribution <- pbeta(x, shape1 = a, shape2 = b)
         
-        
+        # Pentru P(X ≤ A)
         xs <- seq(0, A, by = 0.01)
         xs1 <- c(xs, seq(A, 0, by =-0.01))
         ys <- c(c(pbeta(xs, shape1 = a, shape2 = b)), seq(0,0,length = length(xs)))
         
+        # Pentru P( X ≥ B)
         xt <- seq(B, 1, by = 0.01)
         xt1 <- c(xt, seq(1, B, by = -0.01))
         yt <- c(c(pbeta(xt, shape1 = a, shape2 = b)), seq(0,0,length = length(xt)))
         
-        
+        # Pentru P(A ≤ X ≤ B)
         xf <- seq(A, B, by =0.01)
         xf1 <- c(xf, seq(B, A, by =-0.01))
         yf <- c(c(pbeta(xf, shape1 = a, shape2 = b)), seq(0,0, length = length(xf)))
@@ -132,12 +149,12 @@ server <- function(input, output, session) {
         
         
         
-        
+        # Calculam probabilitatile si le afisam ca text
         output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), round(pbeta(A, shape1 = a, shape2 = b), digits = 2)))
         output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), round(1 - pbeta(B, shape1 = a, shape2 = b), digits = 2)))
         output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), round(pbeta(B, shape1 = a, shape2 = b) - pbeta(A, shape1 = a, shape2 = b), digits= 2)))
         
-        
+        # Coloram aria de sub grafic
         ggplot() +
           geom_line(aes(x=x, y=distribution), color = "red")+
           geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
