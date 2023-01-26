@@ -14,7 +14,7 @@ ui <- dashboardPage(
     #side-bar
     selectInput("dist", "Select a Distribution:", 
                 c("Normal" = "norm", "Uniform" = "unif", "Exponential" = "exp", "Poisson" = "pois", "Binomial" = "binom", "Geometric" = "geom", "Gamma" = "gamma", "Beta" = "beta", "Chi-Squared" = "chisq", 
-                  "F" = "f", "t" = "t", "Cauchy" = "cauchy", "Laplace" = "laplace", "Log-Normal" = "lnorm", "Weibull" = "weibull", "Pareto" = "pareto"))
+                  "F" = "f", "t" = "t", "Cauchy" = "cauchy" , "Log-Normal" = "lnorm", "Weibull" = "weibull", "Pareto" = "pareto"))
     
   ),
   #Folosim box
@@ -134,18 +134,18 @@ server <- function(input, output, session) {
         distribution <- pbeta(x, shape1 = a, shape2 = b)
         
         # Pentru P(X ≤ A)
-        xs <- seq(0, A, by = 0.01)
-        xs1 <- c(xs, seq(A, 0, by =-0.01))
+        xs <- seq(0, A, by = 0.001)
+        xs1 <- c(xs, seq(A, 0, by =-0.001))
         ys <- c(c(pbeta(xs, shape1 = a, shape2 = b)), seq(0,0,length = length(xs)))
         
         # Pentru P( X ≥ B)
-        xt <- seq(B, 1, by = 0.01)
-        xt1 <- c(xt, seq(1, B, by = -0.01))
+        xt <- seq(B, 1, by = 0.001)
+        xt1 <- c(xt, seq(1, B, by = -0.001))
         yt <- c(c(pbeta(xt, shape1 = a, shape2 = b)), seq(0,0,length = length(xt)))
         
         # Pentru P(A ≤ X ≤ B)
-        xf <- seq(A, B, by =0.01)
-        xf1 <- c(xf, seq(B, A, by =-0.01))
+        xf <- seq(A, B, by =0.001)
+        xf1 <- c(xf, seq(B, A, by =-0.001))
         yf <- c(c(pbeta(xf, shape1 = a, shape2 = b)), seq(0,0, length = length(xf)))
         polygon(xf1, yf, col = "blue")
         
@@ -220,17 +220,17 @@ server <- function(input, output, session) {
         A <- input$A
         B <- input$B
         distribution <- pnorm(x, mean = a, sd = b)
-        xs <- seq(0, A, by = 0.01)
-        xs1 <- c(xs, seq(A, 0, by =-0.01))
+        xs <- seq(0, A, by = 0.001)
+        xs1 <- c(xs, seq(A, 0, by =-0.001))
         ys <- c(c(pnorm(xs, mean = a, sd= b)), seq(0,0,length = length(xs)))
         
-        xt <- seq(B, 1, by = 0.01)
-        xt1 <- c(xt, seq(1, B, by = -0.01))
+        xt <- seq(B, 1, by = 0.001)
+        xt1 <- c(xt, seq(1, B, by = -0.001))
         yt <- c(c(pnorm(xt, mean = a, sd= b)), seq(0,0,length = length(xt)))
         
         
-        xf <- seq(A, B, by =0.01)
-        xf1 <- c(xf, seq(B, A, by =-0.01))
+        xf <- seq(A, B, by =0.001)
+        xf1 <- c(xf, seq(B, A, by =-0.001))
         yf <- c(c(pnorm(xf, mean = a, sd = b)), seq(0,0, length = length(xf)))
         polygon(xf1, yf, col = "blue")
         
@@ -340,7 +340,7 @@ server <- function(input, output, session) {
       # show("alphaBeta")
       hide("alphaBeta")
       show("oneParam")
-      updateSliderInput(session, "alphaS_", label = "Lambda",value=0.5, 
+      updateSliderInput(session, "alphaS_", label = "Lambda",value=10, 
                         0, 100, 0.01
       )
       
@@ -486,7 +486,7 @@ server <- function(input, output, session) {
         
         
         ggplot() +
-          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_point(aes(x=x, y=distribution), color = "red", size=2)+
           geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
           geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
           geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
@@ -501,10 +501,10 @@ server <- function(input, output, session) {
       show("alphaBeta")
       hide("oneParam")
       
-      updateSliderInput(session, "alpha_", label = "Repetari",value=0, 
+      updateSliderInput(session, "alpha_", label = "Repetari",value=50, 
                         0, 100, 1
       )
-      updateSliderInput(session, "beta_", label = "Probabilitate", value=1,
+      updateSliderInput(session, "beta_", label = "Probabilitate", value=0.5,
                         0, 1, 0.1
       )
       
@@ -589,14 +589,14 @@ server <- function(input, output, session) {
       # show("alphaBeta")
       hide("alphaBeta")
       show("oneParam")
-      updateSliderInput(session, "alphaS_", label = "Probabilitatea",value=0.5, 
+      updateSliderInput(session, "alphaS_", label = "Probabilitatea",value=0.2, 
                         0, 1, 0.01
       )
       
-      updateSliderInput(session, "A", label = symbol("A"),value=0, 
+      updateSliderInput(session, "A", label = symbol("A"),value=18, 
                         0, 100, 1
       )
-      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+      updateSliderInput(session, "B", label = symbol("B"),value=45, 
                         0, 100, 1
       )
       
@@ -880,7 +880,7 @@ server <- function(input, output, session) {
         b <- input$beta_
         density <- df(x, df1 = a,  df2 = b, log = FALSE)
         ggplot() + 
-          geom_point(aes(x=x,y=density), color="blue")+
+          geom_line(aes(x=x,y=density), color="blue")+
           
           xlab("X") + ylab("Density")
       })
@@ -1113,98 +1113,6 @@ server <- function(input, output, session) {
         output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pcauchy(A, location = a, scale = b)))
         output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pcauchy(B, location = a, scale = b)))
         output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pcauchy(B, location = a, scale = b) - pcauchy(A, location = a, scale = b)))
-        
-        
-        ggplot() +
-          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
-          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
-          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
-          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
-      })
-      
-      
-    }
-    
-    
-    
-    #laplace distribution - nu merge
-    
-    if(input$dist == "laplace"){
-      show("alphaBeta")
-      hide("oneParam")
-      
-      # strict pozitiv
-      updateSliderInput(session, "alpha_", label = "Locatie",value=1, 
-                        0.1, 50, 0.1
-      )
-      
-      updateSliderInput(session, "beta_", label = "Scara(Scale)", value=1,
-                        0, 10, 1
-      )
-      
-      updateSliderInput(session, "A", label = symbol("A"),value=1, 
-                        0, 100, 1
-      )
-      updateSliderInput(session, "B", label = symbol("B"),value=1, 
-                        0, 100, 1
-      )
-      
-      
-      
-      # hide("alphaBeta")
-      output$density<-renderPlot({
-        x <- rlaplace(10000, mean = 0, sd = 1)
-        a <- input$alpha_
-        b <- input$beta_
-        density <- dlaplace(x, location = a,  scale = b, log = FALSE)
-        ggplot() + 
-          geom_line(aes(x=x,y=density), color="blue")+
-          
-          xlab("X") + ylab("Density")
-      })
-      
-      
-      output$distribution <-renderPlot({
-        x <- seq(0, 100, by = 1)
-        a <- input$alpha_
-        b <- input$beta_
-        distribution <- plaplace(x, location = a, scale = b)
-        
-        
-        ggplot() +
-          geom_line(aes(x=x, y=distribution), color = "red") +
-          xlab("X") + ylab("Distribution")
-        
-        
-      })
-      output$distributionWithProb<-renderPlot({
-        x <- seq(0, 100, by = 1)
-        a <- input$alpha_
-        b <- input$beta_
-        A <- input$A
-        B <- input$B
-        distribution <- plaplace(x, location = a, scale = b)
-        
-        xs <- seq(0, A, by = 1)
-        xs1 <- c(xs, seq(A, 0, by =-1))
-        ys <- c(c(plaplace(xs, location = a, scale= b)), seq(0,0,length = length(xs)))
-        
-        xt <- seq(B, 100, by = 1)
-        xt1 <- c(xt, seq(100, B, by = -1))
-        yt <- c(c(plaplace(xt, location = a, scale= b)), seq(0,0,length = length(xt)))
-        
-        
-        xf <- seq(A, B, by =1)
-        xf1 <- c(xf, seq(B, A, by =-1))
-        yf <- c(c(plaplace(xf, location = a, scale = b)), seq(0,0, length = length(xf)))
-        polygon(xf1, yf, col = "blue")
-        
-        
-        
-        
-        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), plaplace(A, location = a, scale = b)))
-        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - plaplace(B, location = a, scale = b)))
-        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), plaplace(B, location = a, scale = b) - plaplace(A, location = a, scale = b)))
         
         
         ggplot() +
