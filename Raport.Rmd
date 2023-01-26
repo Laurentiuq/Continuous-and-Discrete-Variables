@@ -128,9 +128,11 @@ Pentru fiecare distributie calculata vom actualiza ce slider folosim si ce valor
       updateSliderInput(session, "B", label = symbol("B"),value=0, 
                         0, 1, 0.1
       )
-```  
+```    
 
-##Distributii:  
+
+
+## Distributii:
 ```{r, echo = FALSE}
 # shinyAppDir(
 #  system.file("./ProiectR"),
@@ -138,7 +140,8 @@ Pentru fiecare distributie calculata vom actualiza ce slider folosim si ce valor
 # )
 ```
 
-```{r }
+### Distributie Beta
+```{r, eval=FALSE }
 if(input$dist == "beta"){
       # afisam alphaBeta pentru ca avem nevoie de doua variabile
       show("alphaBeta")
