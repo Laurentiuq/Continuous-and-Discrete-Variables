@@ -4,30 +4,41 @@ author: "Nechita Maria-Ilinca, Ghetoiu Gheorghe-Laurentiu"
 output: html_document
 date: "2023-01-26"
 # runtime: shiny
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 # Enunt
-O aplicație în care să ilustrați o serie de repartiții discrete și continue (minim 15) și modul în care pot fi utilizate în calcul: astfel pentru fiecare repartiție să aveți posibilitatea să selectați valorile parametrilor care definesc repartiția, să ilustrați grafic densitatea (respectiv funcția de masă) și funcția de repartiție, să calculați probabilități de tipul $A = \mathrm{P}(X \le a), \mathrm{P}(X \ge b)$ sau $\mathrm{P}(a \le X \le b)$, pentru valori ale lui $a$ si $b$ date si sa ilustrati grafic probabilitatea calculata prin hasurarea zonei corespunzatoare.
+
+O aplicație în care să ilustrați o serie de repartiții discrete și
+continue (minim 15) și modul în care pot fi utilizate în calcul: astfel
+pentru fiecare repartiție să aveți posibilitatea să selectați valorile
+parametrilor care definesc repartiția, să ilustrați grafic densitatea
+(respectiv funcția de masă) și funcția de repartiție, să calculați
+probabilități de tipul $A = \mathrm{P}(X \le a), \mathrm{P}(X \ge b)$
+sau $\mathrm{P}(a \le X \le b)$, pentru valori ale lui $a$ si $b$ date
+si sa ilustrati grafic probabilitatea calculata prin hasurarea zonei
+corespunzatoare.
 
 ## Afisare
-Pentru toate elementele ce se afiseaza, mai putin sidebar, am folosit box astfel:
-Avem doua sliders **Alpha** si **Beta**, valorile date de ele(alpha_, respectiv beta_) o sa fie folosite pe parcurs la toate distributiile care necesita/permit doua variabile.
-Vor fi preluate in toate distributiile ca "a" si "b"(in variabilele a si b)
 
-**oneParam** este folosit pentru distributiile care necesita doar un parametru
-valoarea acestuia(alphaS_) o sa fie preluata ca "a"(in variabila a)
+Pentru toate elementele ce se afiseaza, mai putin sidebar, am folosit
+box astfel: Avem doua sliders **Alpha** si **Beta**, valorile date de
+ele(alpha\_, respectiv beta\_) o sa fie folosite pe parcurs la toate
+distributiile care necesita/permit doua variabile. Vor fi preluate in
+toate distributiile ca "a" si "b"(in variabilele a si b)
 
+**oneParam** este folosit pentru distributiile care necesita doar un
+parametru valoarea acestuia(alphaS\_) o sa fie preluata ca "a"(in
+variabila a)
 
-Avem cate un plot pentru: 
- - functia de densitate 
- - functia de repartitie
- - functia de repartitie cu calculul probabilitatilor de tipul:  
-$A = \mathrm{P}(X \le a)$  
-$\mathrm{P}(X \ge b)$  
-$\mathrm{P}(a \le X \le b)$  
-
-
-
+Avem cate un plot pentru: - functia de densitate - functia de
+repartitie - functia de repartitie cu calculul probabilitatilor de
+tipul:\
+$A = \mathrm{P}(X \le a)$\
+$\mathrm{P}(X \ge b)$\
+$\mathrm{P}(a \le X \le b)$
 
 ```{r include=FALSE}
 library(shiny)
@@ -106,11 +117,11 @@ ui <- dashboardPage(
   )
 )
 
-```  
+```
 
+Pentru fiecare distributie calculata vom actualiza ce slider folosim si
+ce valori pot sa fie selectate:
 
-
-Pentru fiecare distributie calculata vom actualiza ce slider folosim si ce valori pot sa fie selectate: 
 ```{r eval=FALSE}
  # afisam alphaBeta pentru ca avem nevoie de doua variabile
       show("alphaBeta")
@@ -131,11 +142,10 @@ Pentru fiecare distributie calculata vom actualiza ce slider folosim si ce valor
       updateSliderInput(session, "B", label = symbol("B"),value=0, 
                         0, 1, 0.1
       )
-```    
-
-
+```
 
 ## Distributii:
+
 ```{r, echo = FALSE}
 # shinyAppDir(
 #  system.file("C:/Users/Laurentiu/Documents/proiectR"),
@@ -144,6 +154,7 @@ Pentru fiecare distributie calculata vom actualiza ce slider folosim si ce valor
 ```
 
 ### Distributie Beta
+
 ```{r, eval=FALSE }
 
 server <- function(input, output, session) {
@@ -240,11 +251,12 @@ server <- function(input, output, session) {
     }
     
 ```
+
 ![](./images/Beta.png)
 
-### Distributie normala
+### Distributie Normala
 
-``` {r eval = FALSE}
+```{r eval = FALSE}
 if(input$dist == "norm"){
       show("alphaBeta")
       hide("oneParam")
@@ -328,9 +340,10 @@ if(input$dist == "norm"){
     
    
 ```
+
 ![](./images/Normal.png)
 
-### Distribuie uniforma
+### Distribuie Uniforma
 
 ```{r eval = FALSE}
 
@@ -419,9 +432,10 @@ if(input$dist == "norm"){
 
 
 ```
+
 ![](./images/Uniform.png)
 
-### Distributie exponentiala
+### Distributie Exponentiala
 
 ```{r eval = FALSE}
 if(input$dist == "exp"){
@@ -504,9 +518,8 @@ if(input$dist == "exp"){
     
     
 ```
+
 ![](./images/Exponential.png)
-
-
 
 ### Distributie Poisson
 
@@ -589,10 +602,11 @@ if(input$dist == "exp"){
       
     }
 ```
+
 ![](./images/Poisson.png)
 
-
 ### Distributie Binomiala
+
 ```{r eval=FALSE}
 if(input$dist == "binom"){
       show("alphaBeta")
@@ -680,10 +694,11 @@ if(input$dist == "binom"){
       
     }
 ```
+
 ![](./images/Binomiala.png)
 
-
 ### Repartitia Geometrica
+
 ```{r eval=FALSE}
 if(input$dist == "geom"){
       # show("alphaBeta")
@@ -765,8 +780,670 @@ if(input$dist == "geom"){
       
     }
 ```
+
 ![](./images/Geometrica.png)
 
+### Distributia Cauchy
+
+```{r eval=FALSE}
+if(input$dist == "cauchy"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      # strict pozitiv
+      updateSliderInput(session, "alpha_", label = "Locatie",value=30, 
+                        0.1, 50, 0.1
+      )
+      
+      updateSliderInput(session, "beta_", label = "Scara(Scale)", value=8,
+                        0, 10, 1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dcauchy(x, location = a,  scale = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- pcauchy(x, location = a, scale = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- pcauchy(x, location = a, scale = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(pcauchy(xs, location = a, scale= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(pcauchy(xt, location = a, scale= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(pcauchy(xf, location = a, scale = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pcauchy(A, location = a, scale = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pcauchy(B, location = a, scale = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pcauchy(B, location = a, scale = b) - pcauchy(A, location = a, scale = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+```
+
+![](./images/Cauchy.png)
+
+### Distribuitia F
+
+```{r eval=FALSE}
+  if(input$dist == "f"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      updateSliderInput(session, "alpha_", label = "Gradul 1 de libertate",value=1, 
+                        0.1, 100, 0.1
+      )
+      updateSliderInput(session, "beta_", label = "Gradul 2 de libertate", value=1,
+                        0.1, 100, 0.1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- df(x, df1 = a,  df2 = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- pf(x, df1 = a, df2 = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- pf(x, df1 = a, df2 = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(pf(xs, df1 = a, df2= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(pf(xt, df1 = a, df2= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(pf(xf, df1 = a, df2 = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pf(A, df1 = a, df2 = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pf(B, df1 = a, df2 = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pf(B, df = a, df2 = b) - pf(A, df1 = a, df2 = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+    
+```
+
+
+![](./images/F.png)
+
+### Distributia t
+
+```{r eval=FALSE}
+    
+    if(input$dist == "t"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      # strict pozitiv
+      updateSliderInput(session, "alpha_", label = "Gradul de libertate",value=1, 
+                        0.1, 25, 0.1
+      )
+      # mai mica decat 37 (abs(ncp)<=37.62)
+      updateSliderInput(session, "beta_", label = "Centralitatea", value=1,
+                        0, 37, 1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dt(x, df = a,  ncp = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- pt(x, df = a, ncp = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- pt(x, df = a, ncp = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(pt(xs, df = a, ncp= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(pt(xt, df = a, ncp= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(pt(xf, df = a, ncp = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pt(A, df = a, ncp = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pt(B, df = a, ncp = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pt(B, df = a, ncp = b) - pt(A, df = a, ncp = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+```
+
+![](./images/t.png)
+
+### Distributia Chi-Squared
+
+```{r eval=FALSE}
+if(input$dist == "chisq"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      updateSliderInput(session, "alpha_", label = "Gradul de libertate",value=1, 
+                        0.1, 25, 0.1
+      )
+      updateSliderInput(session, "beta_", label = "Non-centralitatea", value=1,
+                        0, 10, 1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dchisq(x, df = a,  ncp = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- pchisq(x, df = a, ncp = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- pchisq(x, df = a, ncp = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(pchisq(xs, df = a, ncp= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(pchisq(xt, df = a, ncp= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(pchisq(xf, df = a, ncp = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pchisq(A, df = a, ncp = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pchisq(B, df = a, ncp = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pchisq(B, df = a, ncp = b) - pchisq(A, df = a, ncp = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+```
+
+![](./images/Chi-Squared.png)
+
+### Distributia Log-Normal
+
+```{r eval=FALSE}
+
+
+    if(input$dist == "lnorm"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      updateSliderInput(session, "alpha_", label = "Media log",value=6, 
+                        0.1, 10, 0.01
+      )
+      updateSliderInput(session, "beta_", label = "Deviatia standard log", value=2.2,
+                        0.1, 10, 0.01
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dlnorm(x, meanlog = a,  sdlog = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- plnorm(x, meanlog = a, sdlog = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- plnorm(x, meanlog = a, sdlog = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(plnorm(xs, meanlog = a, sdlog= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(plnorm(xt, meanlog = a, sdlog= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(plnorm(xf, meanlog = a, sdlog = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), plnorm(A, meanlog = a, sdlog = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - plnorm(B, meanlog = a, sdlog = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), plnorm(B, meanlog = a, sdlog = b) - plnorm(A, meanlog = a, sdlog = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+
+```
+
+![](./images/Log-Normal.png)
+
+### Distributia Weibull
+
+```{r eval=FALSE}
+if(input$dist == "weibull"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      updateSliderInput(session, "alpha_", label = "Forma",value=2, 
+                        0, 50, 1
+      )
+      updateSliderInput(session, "beta_", label = "Scale", value=18,
+                        0.1, 25, 0.1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dweibull(x, shape = a,  scale = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- pweibull(x, shape = a, scale = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- pweibull(x, shape = a, scale = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(pweibull(xs, shape = a, scale= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(pweibull(xt, shape = a, scale= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(pweibull(xf, shape = a, scale = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), pweibull(A, shape = a, scale = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - pweibull(B, shape = a, scale = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), pweibull(B, shape = a, scale = b) - pweibull(A, shape = a, scale = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+```
+
+![](./images/Weibull.png)
+
+### Distributia Pareto
+
+```{r eval=FALSE}
+ if(input$dist == "pareto"){
+      show("alphaBeta")
+      hide("oneParam")
+      
+      updateSliderInput(session, "alpha_", label = "Locatie",value=2, 
+                        0, 50, 1
+      )
+      updateSliderInput(session, "beta_", label = "Forma", value=20,
+                        0, 25, 1
+      )
+      
+      updateSliderInput(session, "A", label = symbol("A"),value=1, 
+                        0, 100, 1
+      )
+      updateSliderInput(session, "B", label = symbol("B"),value=1, 
+                        0, 100, 1
+      )
+      
+      
+      
+      # hide("alphaBeta")
+      output$density<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        density <- dpareto(x, shape = a,  scale = b, log = FALSE)
+        ggplot() + 
+          geom_line(aes(x=x,y=density), color="blue")+
+          
+          xlab("X") + ylab("Density")
+      })
+      
+      
+      output$distribution <-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        distribution <- ppareto(x, shape = a, scale = b)
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red") +
+          xlab("X") + ylab("Distribution")
+        
+        
+      })
+      output$distributionWithProb<-renderPlot({
+        x <- seq(0, 100, by = 1)
+        a <- input$alpha_
+        b <- input$beta_
+        A <- input$A
+        B <- input$B
+        distribution <- ppareto(x, shape = a, scale = b)
+        
+        xs <- seq(0, A, by = 1)
+        xs1 <- c(xs, seq(A, 0, by =-1))
+        ys <- c(c(ppareto(xs, shape = a, scale= b)), seq(0,0,length = length(xs)))
+        
+        xt <- seq(B, 100, by = 1)
+        xt1 <- c(xt, seq(100, B, by = -1))
+        yt <- c(c(ppareto(xt, shape = a, scale= b)), seq(0,0,length = length(xt)))
+        
+        
+        xf <- seq(A, B, by =1)
+        xf1 <- c(xf, seq(B, A, by =-1))
+        yf <- c(c(ppareto(xf, shape = a, scale = b)), seq(0,0, length = length(xf)))
+        polygon(xf1, yf, col = "blue")
+        
+        
+        
+        
+        output$P1<-renderText(paste0(HTML("P(X ≤ A) = "), ppareto(A, shape = a, scale = b)))
+        output$P2<-renderText(paste0(HTML("P( X ≥ B) = "), 1 - ppareto(B, shape = a, scale = b)))
+        output$P3<-renderText(paste0(HTML("P(A ≤ X ≤ B) = "), ppareto(B, shape = a, scale = b) - ppareto(A, shape = a, scale = b)))
+        
+        
+        ggplot() +
+          geom_line(aes(x=x, y=distribution), color = "red", size=2)+
+          geom_polygon(aes(x= xs1, y=ys), colour = "purple", fill="purple")+
+          geom_polygon(aes(x= xt1, y=yt), colour = "blue", fill="blue")+
+          geom_polygon(aes(x= xf1, y=yf), colour = "grey", fill="grey")
+      })
+      
+      
+    }
+    
+    
+    
+    
+    
+  })
+  
+}
+```
+
+![](./images/Pareto.png){width="3458"}
 
 ## Including Plots
 
@@ -776,4 +1453,5 @@ You can also embed plots, for example:
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Note that the `echo = FALSE` parameter was added to the code chunk to
+prevent printing of the R code that generated the plot.
